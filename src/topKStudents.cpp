@@ -21,6 +21,85 @@ struct student {
 	int score;
 };
 
-struct student ** topKStudents(struct student *students, int len, int K) {
+void students_Merge(struct student *students, int, int, int);
+void students_MergeSort(struct student *students, int, int);
+
+struct student ** topKStudents(struct student *students, int len, int K) 
+{
+	if (students != NULL && len > 0 && K <= len && K>0)
+	{
+		students_MergeSort(students, 0, len - 1);
+
+		//top_K_students array store the details of top 'k' students
+		struct student **top_K_students = (student**)malloc(K*sizeof(student));
+
+		for (int i = 0; i < K; i++)
+		{
+			top_K_students[i] = (struct student*)malloc(sizeof(struct student));
+			top_K_students[i] = &students[i];
+		}
+
+		return top_K_students;
+	}
 	return NULL;
+}
+
+void students_MergeSort(struct student *students, int min, int max)
+{
+	if (min < max)
+	{
+		int mid = (min + max) / 2;
+		//sort left part of array
+		students_MergeSort(students, min, mid);
+		//sort right part of array
+		students_MergeSort(students, mid + 1, max);
+		//merge two sorted arrays(i.e; left and right parts)
+		students_Merge(students, min, mid, max);	//sorts and merges
+	}
+}
+
+void students_Merge(struct student *students, int min, int mid, int max)
+{
+	//temporary array to store sorted array
+	struct student temp[4] = { {}, {}, {}, {} };
+	int index, minimum = min, mid_minimum = mid + 1, k;
+	for (index = minimum; minimum <= mid && mid_minimum <= max; index++)
+	{
+		if (students[minimum].score >= students[mid_minimum].score)
+		{
+			temp[index].name = students[minimum].name;
+			temp[index].score = students[minimum].score;
+			minimum++;
+		}
+		else
+		{
+			temp[index].name = students[mid_minimum].name;
+			temp[index].score = students[mid_minimum].score;
+			mid_minimum++;
+		}
+	}
+	if (minimum > mid)
+	{
+		for (k = mid_minimum; k <= max; k++)
+		{
+			temp[index].name = students[k].name;
+			temp[index].score = students[k].score;
+			index++;
+		}
+	}
+	else
+	{
+		for (k = minimum; k <= mid; k++)
+		{
+			temp[index].name = students[k].name;
+			temp[index].score = students[k].score;
+			index++;
+		}
+	}
+	//copying temporary array to students array
+	for (k = min; k <= max; k++)
+	{
+		students[k].name = temp[k].name;
+		students[k].score = temp[k].score;
+	}
 }

@@ -20,6 +20,85 @@ struct student {
 	int score;
 };
 
-void * scoresDescendingSort(struct student *students, int len) {
+void MergeSort(struct student *students, int min, int max);
+void Merge(struct student *students, int min, int mid, int max);
+char *StringCopy(char *destination, char *source);
+
+void * scoresDescendingSort(struct student *students, int len) 
+{
+	if (students != NULL && len > 0)
+	{
+		MergeSort(students, 0, len - 1);
+		for (int i = 0; i < len; i++)
+		{
+			printf("%s - %d\n", students[i].name, students[i].score);
+		}
+	}
 	return NULL;
+}
+
+void MergeSort(struct student *students, int min, int max)
+{
+	if (min < max)
+	{
+		int mid = (min + max) / 2;
+		MergeSort(students, min, mid);		//in recursion, applying divide and conquer strategy
+		MergeSort(students, mid + 1, max);
+		Merge(students, min, mid, max);	//sorts and merges
+	}
+}
+
+void Merge(struct student *students, int min, int mid, int max)
+{
+	struct student temp[4] = { {}, {}, {}, {} };
+	int index, minimum = min, mid_minimum = mid + 1, k;
+	for (index = minimum; minimum <= mid && mid_minimum <= max; index++)
+	{
+		if (students[minimum].score >= students[mid_minimum].score)
+		{
+			StringCopy(temp[index].name, students[minimum].name);
+			temp[index].score = students[minimum].score;
+			minimum++;
+		}
+		else
+		{
+			StringCopy(temp[index].name, students[mid_minimum].name);
+			temp[index].score = students[mid_minimum].score;
+			mid_minimum++;
+		}
+	}
+	if (minimum > mid)
+	{
+		for (k = mid_minimum; k <= max; k++)
+		{
+			StringCopy(temp[index].name, students[k].name);
+			temp[index].score = students[k].score;
+			index++;
+		}
+	}
+	else
+	{
+		for (k = minimum; k <= mid; k++)
+		{
+			StringCopy(temp[index].name, students[k].name);
+			temp[index].score = students[k].score;
+			index++;
+		}
+	}
+	for (k = min; k <= max; k++)
+	{
+		StringCopy(students[k].name, temp[k].name);
+		students[k].score = temp[k].score;
+	}
+}
+
+char *StringCopy(char *destination, char *source)
+{
+	char *saved = destination;
+	while (*source)
+	{
+		*destination++ = *source++;
+	}
+	*destination = 0;
+	return saved;
 }
