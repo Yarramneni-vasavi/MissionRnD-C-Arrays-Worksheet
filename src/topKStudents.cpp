@@ -26,13 +26,21 @@ void students_MergeSort(struct student *students, int, int);
 
 struct student ** topKStudents(struct student *students, int len, int K) 
 {
-	if (students != NULL && len > 0 && K <= len && K>0)
+	if (students != NULL && len > 0 && K>0)
 	{
-		students_MergeSort(students, 0, len - 1);
+		struct student **top_K_students = NULL;
+		top_K_students = (student**)malloc(K*sizeof(student));
 
-		//top_K_students array store the details of top 'k' students
-		struct student **top_K_students = (student**)malloc(K*sizeof(student));
+		if (K < len)
+		{
+			students_MergeSort(students, 0, len - 1);
+		}
+		else if (K >= len)
+		{
+			K = len;
+		}
 
+		//top 'k' students are put into top_K_students array
 		for (int i = 0; i < K; i++)
 		{
 			top_K_students[i] = (struct student*)malloc(sizeof(struct student));
@@ -54,14 +62,14 @@ void students_MergeSort(struct student *students, int min, int max)
 		//sort right part of array
 		students_MergeSort(students, mid + 1, max);
 		//merge two sorted arrays(i.e; left and right parts)
-		students_Merge(students, min, mid, max);	//sorts and merges
+		students_Merge(students, min, mid, max);	
 	}
 }
 
 void students_Merge(struct student *students, int min, int mid, int max)
 {
 	//temporary array to store sorted array
-	struct student temp[4] = { {}, {}, {}, {} };
+	struct student *temp = (student *)malloc(10 * sizeof(student));
 	int index, minimum = min, mid_minimum = mid + 1, k;
 	for (index = minimum; minimum <= mid && mid_minimum <= max; index++)
 	{
